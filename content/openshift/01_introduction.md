@@ -7,4 +7,4 @@ Dans un monde connecté en constante évolution, la gestion efficace des apparei
 
 Red Hat Device Edge est une plateforme flexible conçue pour répondre aux besoins des dispositifs à la périphérie, tels que les outils de ligne d'assemblage, les passerelles IoT, les points de vente et les contrôleurs industriels. Ces appareils opèrent souvent dans des environnements où les ressources informatiques sont limitées et où l'accès peut être restreint. Red Hat Device Edge offre une approche uniforme et adaptable pour prendre en charge diverses charges de travail sur ces appareils, malgré leurs contraintes en termes de ressources.
 
-![Archi](/images/archi-edge.png)
+![Archi](images/archi-edge.png)
