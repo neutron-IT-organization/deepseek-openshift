@@ -15,8 +15,7 @@ markdown_extensions:
 nav:
 - 'Minilab guides':
   - openshift/index.md
-  - openshift/01_introduction.md
-  - openshift/02_rhel-installation.md
-  - openshift/03_microshift-installation.md
-  - openshift/04_microshift-connection.md
-  - openshift/05_add-console.md
+  - openshift/01_rhel-installation.md
+  - openshift/02_microshift-installation.md
+  - openshift/03_microshift-connection.md
+  - openshift/04_add-console.md
