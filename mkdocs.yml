@@ -1,0 +1,20 @@
+site_name: My Docs
+theme:
+  name: material
+  features:
+  - navigation.tabs
+  - navigation.indexes
+plugins:
+- search
+repo_url: https://github.com/feven-redhat/homelab
+repo_name: feven-redhat/homelab
+docs_dir: content
+markdown_extensions:
+- toc:
+    toc_depth: "2-3"
+nav:
+- Home: index.md
+- 'Minilab guides':
+  - openshift/index.md
+  - openshift/00_introduction.md
+  - openshift/01_architecture.md
