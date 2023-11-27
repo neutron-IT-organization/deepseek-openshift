@@ -13,7 +13,6 @@ markdown_extensions:
 - toc:
     toc_depth: "2-3"
 nav:
-- Home: index.md
 - 'Minilab guides':
   - openshift/index.md
   - openshift/01_introduction.md
