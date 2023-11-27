@@ -34,5 +34,23 @@ Pour copier le pull secret dans le dossier /etc/crio de votre machine RHEL, exé
 sudo cp $HOME/openshift-pull-secret /etc/crio/openshift-pull-secret
 ```
 
+Rendre le fichier /etc/crio/openshift-pull-secret lisible et inscriptible par l'utilisateur root uniquement en
+en exécutant la commande suivante :
 
+```shell
+sudo chown root:root /etc/crio/openshift-pull-secret
+```
 
+## Démarrez Red Hat Device Edge.
+
+En tant qu'utilisateur root, démarrez MicroShift:
+
+```shell
+sudo systemctl start microshift
+```
+
+Pour configurer votre machine RHEL afin qu'elle démarre MicroShift lorsque votre Machine démarre
+
+```shell
+sudo systemctl enable microshift
+```
