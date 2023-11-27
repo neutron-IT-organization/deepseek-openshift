@@ -119,19 +119,10 @@ oc apply -f deploy_console.yaml
 
 ## Vérification
 
-vérifiez que vous avez accès à l'API.
+Vous pouvez maintenant acceder a la console OKD microshift 
 
-Vous devriez maintenant avoir accès à l'API.
-Pour vérifier cela :
 
-```shell
-oc get no
-```
+![Object Storage](/images/console.png)
 
-```
-[feven@scw-friendly-austin ~]$ oc get no
-NAME                  STATUS   ROLES                         AGE   VERSION
-scw-friendly-austin   Ready    control-plane,master,worker   32m   v1.27.6
-```
 
 
