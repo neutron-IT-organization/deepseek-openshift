@@ -11,7 +11,7 @@ https://access.redhat.com/downloads/content/479/ver=/rhel---9/9.3/x86_64/product
 Une fois téléchargée, vous devez configurer l'image en changeant le mot de passe et en désactivant cloud-init à l'aide de la commande suivante :
 
 ```shell
-virt-customize -a ~/Downloads/rhel-9.3-x86_64-kvm.qcow2 --root-password password:mypassword --uninstall cloud-init
+virt-customize -a ~/Downloads/rhel-9.3-x86_64-kvm.qcow2 --root-password password:yourpassword --uninstall cloud-init
 ```
 
 ## Importation de l'image sur Scaleway
@@ -28,7 +28,7 @@ virt-customize -a ~/Downloads/rhel-9.3-x86_64-kvm.qcow2 --root-password password
 ![Create instance](/images/create-instance.png)
 - Configurez les détails de votre instance et procédez à sa création.
  
-Une fois l'instance créée, vous pourrez vous connecter depuis la console scaleway en utilisant les identifiants par défaut : root/mypassword. 
+Une fois l'instance créée, vous pourrez vous connecter depuis la console scaleway en utilisant les identifiants par défaut : root/yourpassword. 
 
 Enfin creer un nouvelle utilisateur 
 
@@ -49,5 +49,15 @@ Valider la connexion en vous connectant en ssh a la machine
 ```shell
 ssh feven@YourIP
 ```
+
+Pour terminer enregistrer vous a votre subscription Red Hat
+
+```shell
+subscription-manager register
+```
+
+
+
+
 
 
