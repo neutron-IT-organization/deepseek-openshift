@@ -6,8 +6,8 @@ theme:
   - navigation.indexes
 plugins:
 - search
-repo_url: https://github.com/feven-redhat/homelab
-repo_name: feven-redhat/homelab
+repo_url: https://github.com/feven-redhat/minilab
+repo_name: feven-redhat/minilab
 docs_dir: content
 markdown_extensions:
 - toc:
@@ -21,4 +21,3 @@ nav:
   - openshift/03_microshift-installation.md
   - openshift/04_microshift-connection.md
   - openshift/05_add-console.md
-  
