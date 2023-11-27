@@ -1,4 +1,4 @@
-
+# Introduction
 ## Introduction
 
 Dans un monde connecté en constante évolution, la gestion efficace des appareils à la périphérie (edge) des réseaux informatiques est devenue essentielle. Red Hat Device Edge émerge comme une solution polyvalente pour répondre aux défis spécifiques posés par la gestion des charges de travail sur des appareils à la limite du réseau. Cette plateforme offre une approche novatrice pour soutenir des tâches variées sur des dispositifs aux ressources limitées, rencontrant des contraintes de puissance, de refroidissement et de connectivité.
