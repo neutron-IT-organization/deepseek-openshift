@@ -1,5 +1,5 @@
 ---
-title: Openshift guides
+title: Minilab guides
 ---
 
 This section of the Homelab documentation contains pages that show how to do individual tasks.
