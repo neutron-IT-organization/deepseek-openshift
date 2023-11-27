@@ -30,7 +30,7 @@ virt-customize -a ~/Downloads/rhel-9.3-x86_64-kvm.qcow2 --root-password password
  
 Une fois l'instance créée, vous pourrez vous connecter depuis la console scaleway en utilisant les identifiants par défaut : root/yourpassword. 
 
-Enfin creer un nouvelle utilisateur 
+Créez un nouvel utilisateur. 
 
 ```shell
 sudo useradd feven
