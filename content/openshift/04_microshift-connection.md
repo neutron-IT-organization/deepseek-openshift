@@ -12,7 +12,6 @@ sudo cat /var/lib/microshift/resources/kubeadmin/kubeconfig > ~/.kube/config
 
 ## Vérification
 
-vérifiez que vous avez accès à l'API.
 
 Vous devriez maintenant avoir accès à l'API.
 Pour vérifier cela :

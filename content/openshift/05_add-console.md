@@ -119,10 +119,10 @@ oc apply -f deploy_console.yaml
 
 ## Vérification
 
-Vous pouvez maintenant acceder a la console OKD microshift 
+Vous pouvez maintenant accéder à la console OKD microshift 
 
 
-![Object Storage](../../images/access-console.png)
+![Object Storage](../images/access-console.png)
 
 
 
