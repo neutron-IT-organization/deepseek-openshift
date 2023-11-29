@@ -19,3 +19,4 @@ nav:
   - openshift/02_microshift-installation.md
   - openshift/03_microshift-connection.md
   - openshift/04_add-console.md
+  - openshift/05_configure-storage.md
