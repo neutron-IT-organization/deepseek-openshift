@@ -1,6 +1,4 @@
-# Connexion a la console 
-
-## Configure dynamic storage
+# Configure dynamic storage
 
 
 MicroShift permet un provisionnement de stockage dynamique et prêt à l'emploi avec LVMS. Le plugin LVMS est la version Red Hat de TopoLVM, un plugin CSI permettant de gérer les volumes LVM pour Kubernetes.
