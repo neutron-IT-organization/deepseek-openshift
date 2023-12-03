@@ -26,4 +26,28 @@ NAME                  STATUS   ROLES                         AGE   VERSION
 scw-friendly-austin   Ready    control-plane,master,worker   32m   v1.27.6
 ```
 
+## Accéder à MicroShift en remote
+
+Pour cela nous allons devoir utiliser un nouvea kubconfig. 
+
+Ouvrez/Creez le fichier suivant
+```shell
+vi /etc/microshift/config.yaml
+```
+
+Et ajouter la configuration ci-dessous en remplacent l'address IP, par l'address IP public de la machine
+
+```shell
+dns:
+  baseDomain: neutron-it.fr
+node:
+  hostnameOverride: "scw-friendly-austin"
+  nodeIP: 10.75.52.217
+apiServer:
+  subjectAltNames:
+  - YOURPUBLICIPADDRESS
+```
+
+Copiez le fichier kubeconfig d'accès remote généré dans le répertoire /var/lib/microshift/resources/kubeadmin/YOURPUBLICIPADDRESS/kubeconfig 
+
 
