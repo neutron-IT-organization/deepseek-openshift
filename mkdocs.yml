@@ -20,3 +20,6 @@ nav:
   - openshift/03_microshift-connection.md
   - openshift/04_add-console.md
   - openshift/05_configure-storage.md
+- 'Additional Setup':
+  - add-setup/index.md
+  - add-setup/01_openvpn.md
