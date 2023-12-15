@@ -62,6 +62,44 @@ ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 ```
 
 
+Then you can deploy keycloak
+
+```shell
+mkdir $HOME/postgres-keycloak-data
+./deploy.sh MY_DB_PASSWORD MY_KEYCLOAK_PASSWORD
+```
+
+## Validate
+
+Go into your web browser.
+
+Search ```https://keycloak.cyber-ops.net:8443```
+
+![Keyclaok check 1](../images/keycloak.png)
+
+Click on Administration Console.
+
+In Username click on admin and put yout MY_KEYCLOAK_PASSWORD as password.
+
+
+![Keyclaok check 2](../images/keycloak-2.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
