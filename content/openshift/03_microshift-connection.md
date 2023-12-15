@@ -48,6 +48,16 @@ apiServer:
   - YOURPUBLICIPADDRESS
 ```
 
-Copiez le fichier kubeconfig d'accès remote généré dans le répertoire /var/lib/microshift/resources/kubeadmin/YOURPUBLICIPADDRESS/kubeconfig 
+Puis restart
+
+```
+systemctl restart microshift
+```
+
+Copiez le fichier kubeconfig d'accès remote généré dans le répertoire 
+
+```shell
+/var/lib/microshift/resources/kubeadmin/YOURPUBLICIPADDRESS/kubeconfig 
+```
 
 
