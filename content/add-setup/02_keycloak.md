@@ -16,6 +16,8 @@ Ajoutez ensuite votre clé ssh et cliquez sur Créer une instance.
 
 ## Installation de Keycloak
 
+Connectez-vous à votre instance en utilisant ssh et suivez les instructions ci-dessous.
+
 Clonez le repo keycloack container pour installer le repo en mode podman.
 
 ```shell
