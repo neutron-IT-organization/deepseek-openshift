@@ -26,3 +26,4 @@ nav:
   - add-setup/01_openvpn.md
   - add-setup/02_keycloak.md
   - add-setup/03_install_wordpress.md
+  - add-setup/03_cyberark.md
