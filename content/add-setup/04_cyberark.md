@@ -109,7 +109,7 @@ vi policy-autom.yaml
     id: florian-ns/service_account/florian-sa
     annotations:
       authn-k8s/namespace: florian-ns
-      authn-k8s/authentication-container-name: ubuntu-auth
+      authn-k8s/authentication-container-name: ubi-auth
   - !grant
     role: !layer ubi8-app
     member: !host florian-ns/service_account/florian-sa
@@ -196,7 +196,7 @@ spec:
         - mountPath: /run/conjur
           name: conjur-access-token
           readOnly: true
-      - name: ubuntu-auth
+      - name: ubi-auth
         image: openshift.artifactory.mycloud.intranatixis.com/cyberark/conjur-openshift-authenticator
         env:
         - name: MY_POD_NAME
