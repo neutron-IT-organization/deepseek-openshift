@@ -149,8 +149,8 @@ On peut maintenant ajouter une variable de test :
 Ajouter maintenant les variable de clef/certificat.
 
 ```shell
-conjur variable set -i conjur/authn-k8s/florian-ns/ca/key -v /home/feven/cyberark/ca.key
-conjur variable set -i conjur/authn-k8s/florian-ns/ca/key -v /home/feven/conjur-server.pem
+conjur variable set -i conjur/authn-k8s/conjur/ca/cert -v "$(cat /home/feven/cyberark/ca.key)" 
+conjur variable set -i conjur/authn-k8s/conjur/ca/cert -v "$(cat /home/feven/conjur-server.pem)" 
 ```
 
 Nous pouvons maintenant déployer notre pod constitué d'un pod applicatif et du conjur authenticator.
