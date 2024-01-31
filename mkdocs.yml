@@ -26,3 +26,4 @@ nav:
   - add-setup/02_keycloak.md
   - add-setup/03_install_wordpress.md
   - add-setup/04_cyberark.md
+  - add-setup/05_kubeburner.md
