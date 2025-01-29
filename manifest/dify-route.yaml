@@ -1,0 +1,16 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: dify-route
+  namespace: deepseek
+spec:
+  path: /
+  to:
+    kind: Service
+    name: dify-nginx
+    weight: 100
+  port:
+    targetPort: dify-nginx
+  tls:
+    termination: edge
+  wildcardPolicy: None

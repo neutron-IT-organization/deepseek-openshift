@@ -94,7 +94,7 @@ Enfin, exposez le service Dify via une route OpenShift pour rendre l'application
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: route-original-dify
+  name: dify-route
   namespace: deepseek
 spec:
   path: /
@@ -103,7 +103,7 @@ spec:
     name: dify-nginx
     weight: 100
   port:
-    targetPort: http-dify
+    targetPort: dify-nginx
   tls:
     termination: edge
   wildcardPolicy: None
