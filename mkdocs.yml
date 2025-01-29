@@ -6,8 +6,8 @@ theme:
   - navigation.indexes
 plugins:
 - search
-repo_url: https://github.com/feven-redhat/minilab
-repo_name: feven-redhat/minilab
+repo_url: https://github.com/neutron-IT-organization/deepseek-openshift
+repo_name: neutron-IT-organization/deepseek-openshift
 docs_dir: content
 markdown_extensions:
 - toc:
