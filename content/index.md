@@ -5,6 +5,7 @@ title: Home
 ```markdown
 # Déploiement de DeepSeek sur OpenShift
 
+
 Cette documentation explique comment déployer DeepSeek sur un cluster OpenShift, en créant un namespace, en attribuant des privilèges au service account, en installant les composants nécessaires, et en exposant l'application via une route.
 
 ## 1. Créer un Namespace `deepseek`
