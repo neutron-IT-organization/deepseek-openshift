@@ -1,0 +1,973 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-api
+  namespace: deepseek
+  labels:
+    app: dify-api
+    app.kubernetes.io/instance: dify-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-api
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-api
+    spec:
+      volumes:
+        - name: dify-api-storage
+          emptyDir: {}
+      containers:
+        - resources:
+            limits:
+              cpu: '1'
+              memory: 2Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          name: dify-api
+          env:
+            - name: MODE
+              value: api
+            - name: LOG_LEVEL
+              value: DEBUG
+            - name: SECRET_KEY
+              value: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+            - name: CONSOLE_WEB_URL
+            - name: INIT_PASSWORD
+              value: password
+            - name: CONSOLE_API_URL
+            - name: SERVICE_API_URL
+            - name: APP_WEB_URL
+            - name: FILES_URL
+            - name: MIGRATION_ENABLED
+              value: 'true'
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: difyai123456
+            - name: DB_HOST
+              value: dify-postgres
+            - name: DB_PORT
+              value: '5432'
+            - name: DB_DATABASE
+              value: dify
+            - name: REDIS_HOST
+              value: dify-redis
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_USERNAME
+            - name: REDIS_PASSWORD
+              value: difyai123456
+            - name: REDIS_USE_SSL
+              value: 'false'
+            - name: REDIS_DB
+              value: '0'
+            - name: CELERY_BROKER_URL
+              value: 'redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/1'
+            - name: WEB_API_CORS_ALLOW_ORIGINS
+              value: '*'
+            - name: CONSOLE_CORS_ALLOW_ORIGINS
+              value: '*'
+            - name: STORAGE_TYPE
+              value: '*'
+            - name: STORAGE_LOCAL_PATH
+              value: /app/api/storage
+            - name: VECTOR_STORE
+              value: weaviate
+            - name: WEAVIATE_HOST
+              value: dify-weaviate
+            - name: WEAVIATE_PORT
+              value: '8080'
+            - name: WEAVIATE_ENDPOINT
+              value: 'http://$(WEAVIATE_HOST):$(WEAVIATE_PORT)'
+            - name: WEAVIATE_API_KEY
+              value: WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+            - name: CODE_EXECUTION_ENDPOINT
+              value: 'http://dify-sandbox:8194'
+            - name: CODE_EXECUTION_API_KEY
+              value: dify-sandbox
+            - name: CODE_MAX_NUMBER
+              value: '9223372036854775807'
+            - name: CODE_MIN_NUMBER
+              value: '-9223372036854775808'
+            - name: CODE_MAX_STRING_LENGTH
+              value: '80000'
+            - name: TEMPLATE_TRANSFORM_MAX_LENGTH
+              value: '80000'
+            - name: CODE_MAX_STRING_ARRAY_LENGTH
+              value: '30'
+            - name: CODE_MAX_OBJECT_ARRAY_LENGTH
+              value: '30'
+            - name: CODE_MAX_NUMBER_ARRAY_LENGTH
+              value: '1000'
+            - name: INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH
+              value: '1000'
+            - name: SSRF_PROXY_HTTP_URL
+              value: 'http://dify-ssrf:3128'
+            - name: SSRF_PROXY_HTTPS_URL
+              value: 'http://dify-ssrf:3128'
+          securityContext:
+            runAsUser: 0
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: dify-api-storage
+              mountPath: /app/api/storage
+          terminationMessagePolicy: File
+          image: 'langgenius/dify-api:0.10.0'
+      securityContext:
+        fsGroup: 0
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-nginx
+  namespace: deepseek
+  labels:
+    app: dify-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-nginx
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-nginx
+    spec:
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: dify-nginx
+          image: 'nginx:latest'
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          volumeMounts:
+            - name: dify-nginx
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: dify-nginx-config
+              mountPath: /etc/nginx/conf.d
+      automountServiceAccountToken: false
+      volumes:
+        - name: dify-nginx
+          configMap:
+            name: dify-nginx
+            defaultMode: 420
+        - name: dify-nginx-config
+          emptyDir: {}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-postgres
+  namespace: deepseek
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-postgres
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-postgres
+    spec:
+      serviceAccountName: dify-postgres
+      containers:
+        - resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+          name: dify-postgres
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - '-U'
+                - $(PGUSER)
+                - '-d'
+                - $(POSTGRES_DB)
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          env:
+            - name: PGUSER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: difyai123456
+            - name: POSTGRES_DB
+              value: dify
+          securityContext:
+            runAsUser: 0
+          ports:
+            - name: postgres-port
+              containerPort: 5432
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          terminationMessagePolicy: File
+          image: 'postgres:15-alpine'
+      serviceAccount: dify-postgres
+      volumes:
+        - name: postgres-data
+          emptyDir: {}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-redis
+  namespace: deepseek
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-redis
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-redis
+    spec:
+      securityContext:
+        fsGroup: 0
+      containers:
+        - resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 102Mi
+          terminationMessagePath: /dev/termination-log
+          name: dify-redis
+          command:
+            - redis-server
+            - '--save'
+            - '20'
+            - '1'
+            - '--loglevel'
+            - warning
+            - '--requirepass'
+            - $(REDIS_PASSWORD)
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: REDIS_PASSWORD
+              value: difyai123456
+          securityContext:
+            runAsUser: 0
+          ports:
+            - name: redis-p
+              containerPort: 6379
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          terminationMessagePolicy: File
+          image: 'redis:6-alpine'
+      serviceAccount: dify-redis
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-sandbox
+  namespace: deepseek
+  labels:
+    app: dify-sandbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-sandbox
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-sandbox
+    spec:
+      containers:
+        - name: dify-sandbox
+          image: 'langgenius/dify-sandbox:0.2.10'
+          ports:
+            - containerPort: 8194
+              protocol: TCP
+          env:
+            - name: API_KEY
+              value: dify-sandbox
+            - name: GIN_MODE
+              value: release
+            - name: WORKER_TIMEOUT
+              value: '15'
+            - name: ENABLE_NETWORK
+              value: 'true'
+            - name: SANDBOX_PORT
+              value: '8194'
+            - name: HTTP_PROXY
+              value: 'http://dify-ssrf:3128'
+            - name: HTTPS_PROXY
+              value: 'http://dify-ssrf:3128'
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/os: linux
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 0
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-ssrf
+  namespace: deepseek
+  labels:
+    app: dify-ssrf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-ssrf
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-ssrf
+    spec:
+      volumes:
+        - name: ssrf-proxy-config
+          configMap:
+            name: ssrf-proxy-config
+            defaultMode: 420
+        - name: ssrf-proxy-entrypoint
+          configMap:
+            name: ssrf-proxy-entrypoint
+            defaultMode: 420
+      containers:
+        - resources:
+            limits:
+              cpu: 300m
+              memory: 300Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          terminationMessagePath: /dev/termination-log
+          name: dify-ssrf
+          command:
+            - sh
+            - '-c'
+            - "cp /tmp/docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh"
+          env:
+            - name: HTTP_PORT
+              value: '3128'
+            - name: COREDUMP_DIR
+              value: /var/spool/squid
+            - name: REVERSE_PROXY_PORT
+              value: '8194'
+            - name: SANDBOX_HOST
+              value: dify-sandbox
+            - name: SANDBOX_PORT
+              value: '8194'
+          ports:
+            - name: dify-ssrf
+              containerPort: 3128
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: ssrf-proxy-config
+              mountPath: /etc/squid/
+            - name: ssrf-proxy-entrypoint
+              mountPath: /tmp/
+          terminationMessagePolicy: File
+          image: 'ubuntu/squid:latest'
+      securityContext:
+        runAsUser: 0
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-weaviate
+  namespace: deepseek
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-weaviate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-weaviate
+    spec:
+      restartPolicy: Always
+      serviceAccountName: dify-weaviate
+      securityContext:
+        fsGroup: 0
+      containers:
+        - resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 102Mi
+          terminationMessagePath: /dev/termination-log
+          name: dify-weaviate
+          env:
+            - name: QUERY_DEFAULTS_LIMIT
+              value: '25'
+            - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+              value: 'false'
+            - name: PERSISTENCE_DATA_PATH
+              value: /var/lib/weaviate
+            - name: DEFAULT_VECTORIZER_MODULE
+              value: none
+            - name: AUTHENTICATION_APIKEY_ENABLED
+              value: 'true'
+            - name: AUTHENTICATION_APIKEY_ALLOWED_KEYS
+              value: WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+            - name: AUTHENTICATION_APIKEY_USERS
+              value: hello@dify.ai
+            - name: AUTHORIZATION_ADMINLIST_ENABLED
+              value: 'true'
+            - name: AUTHORIZATION_ADMINLIST_USERS
+              value: hello@dify.ai
+          securityContext:
+            runAsUser: 0
+          ports:
+            - name: weaviate-p
+              containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: weaviate-data
+              mountPath: /var/lib/weaviate
+          terminationMessagePolicy: File
+          image: 'semitechnologies/weaviate:1.19.0'
+      serviceAccount: dify-weaviate
+      volumes:
+        - name: weaviate-data
+          emptyDir: {}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dify-web
+  namespace: deepseek
+  labels:
+    app: dify-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-web
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-web
+    spec:
+      containers:
+        - name: dify-web
+          image: 'langgenius/dify-web:0.10.0'
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: EDITION
+              value: SELF_HOSTED
+            - name: CONSOLE_API_URL
+            - name: APP_API_URL
+            - name: SENTRY_DSN
+            - name: NEXT_TELEMETRY_DISABLED
+              value: '0'
+            - name: TEXT_GENERATION_TIMEOUT_MS
+              value: '60000'
+            - name: CSP_WHITELIST
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+      securityContext: {}
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: dify-worker
+  namespace: deepseek
+  labels:
+    app: dify-worker
+    app.kubernetes.io/instance: dify-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-worker
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dify-worker
+    spec:
+      volumes:
+        - name: dify-api-storage
+          hostPath:
+            path: /root/dify/app/api/storage
+            type: DirectoryOrCreate
+      containers:
+        - resources:
+            limits:
+              cpu: '1'
+              memory: 2Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          name: dify-worker
+          env:
+            - name: CONSOLE_WEB_URL
+            - name: MODE
+              value: worker
+            - name: LOG_LEVEL
+              value: INFO
+            - name: SECRET_KEY
+              value: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: difyai123456
+            - name: DB_HOST
+              value: dify-postgres
+            - name: DB_PORT
+              value: '5432'
+            - name: DB_DATABASE
+              value: dify
+            - name: REDIS_HOST
+              value: dify-redis
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_USERNAME
+            - name: REDIS_PASSWORD
+              value: difyai123456
+            - name: REDIS_USE_SSL
+              value: 'false'
+            - name: REDIS_DB
+              value: '0'
+            - name: CELERY_BROKER_URL
+              value: 'redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/1'
+            - name: WEB_API_CORS_ALLOW_ORIGINS
+              value: '*'
+            - name: CONSOLE_CORS_ALLOW_ORIGINS
+              value: '*'
+            - name: STORAGE_TYPE
+              value: '*'
+            - name: STORAGE_LOCAL_PATH
+              value: /app/api/storage
+            - name: VECTOR_STORE
+              value: weaviate
+            - name: WEAVIATE_HOST
+              value: dify-weaviate
+            - name: WEAVIATE_PORT
+              value: '8080'
+            - name: WEAVIATE_ENDPOINT
+              value: 'http://$(WEAVIATE_HOST):$(WEAVIATE_PORT)'
+            - name: WEAVIATE_API_KEY
+              value: WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+            - name: SSRF_PROXY_HTTP_URL
+              value: 'http://dify-ssrf:3128'
+            - name: SSRF_PROXY_HTTPS_URL
+              value: 'http://dify-ssrf:3128'
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: dify-api-storage
+              mountPath: /app/api/storage
+          terminationMessagePolicy: File
+          image: 'langgenius/dify-api:0.10.0'
+  serviceName: dify-worker
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dify-nginx
+  namespace: deepseek
+data:
+  nginx.conf: |-
+    user  nginx;
+    worker_processes  auto;
+
+    error_log  /var/log/nginx/error.log notice;
+    pid        /var/run/nginx.pid;
+
+
+    events {
+        worker_connections  1024;
+    }
+
+
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log  /var/log/nginx/access.log  main;
+
+        sendfile        on;
+        #tcp_nopush     on;
+
+        keepalive_timeout  65;
+
+        #gzip  on;
+        client_max_body_size 15M;
+
+        server {
+        listen 80;
+        server_name _;
+
+        location /console/api {
+          proxy_pass https://route-personal-quokka-deepseek.apps.neutron-sno-gpu.neutron-it.fr/;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+
+        location /api {
+          proxy_pass https://route-personal-quokka-deepseek.apps.neutron-sno-gpu.neutron-it.fr/;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+
+        location /v1 {
+          proxy_pass https://route-personal-quokka-deepseek.apps.neutron-sno-gpu.neutron-it.fr/;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+
+        location /files {
+          proxy_pass https://route-personal-quokka-deepseek.apps.neutron-sno-gpu.neutron-it.fr/;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+
+        location / {
+          proxy_pass http://dify-web:3000;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_read_timeout 3600s;
+          proxy_send_timeout 3600s;
+        }
+
+        # If you want to support HTTPS, please uncomment the code snippet below
+        #listen 443 ssl;
+        #ssl_certificate ./../ssl/your_cert_file.cer;
+        #ssl_certificate_key ./../ssl/your_cert_key.key;
+        #ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+        #ssl_prefer_server_ciphers on;
+        #ssl_session_cache shared:SSL:10m;
+        #ssl_session_timeout 10m;
+    }
+    }
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ssrf-proxy-config
+  namespace: deepseek
+data:
+  squid.conf: "acl localnet src 0.0.0.1-0.255.255.255\t# RFC 1122 \"this\" network (LAN)\nacl localnet src 10.0.0.0/8\t\t# RFC 1918 local private network (LAN)\nacl localnet src 100.64.0.0/10\t\t# RFC 6598 shared address space (CGN)\nacl localnet src 169.254.0.0/16 \t# RFC 3927 link-local (directly plugged) machines\nacl localnet src 172.16.0.0/12\t\t# RFC 1918 local private network (LAN)\nacl localnet src 192.168.0.0/16\t\t# RFC 1918 local private network (LAN)\nacl localnet src fc00::/7       \t# RFC 4193 local private network range\nacl localnet src fe80::/10      \t# RFC 4291 link-local (directly plugged) machines\nacl SSL_ports port 443\nacl Safe_ports port 80\t\t# http\nacl Safe_ports port 21\t\t# ftp\nacl Safe_ports port 443\t\t# https\nacl Safe_ports port 70\t\t# gopher\nacl Safe_ports port 210\t\t# wais\nacl Safe_ports port 1025-65535\t# unregistered ports\nacl Safe_ports port 280\t\t# http-mgmt\nacl Safe_ports port 488\t\t# gss-http\nacl Safe_ports port 591\t\t# filemaker\nacl Safe_ports port 777\t\t# multiling http\nacl CONNECT method CONNECT\nhttp_access deny !Safe_ports\nhttp_access deny CONNECT !SSL_ports\nhttp_access allow localhost manager\nhttp_access deny manager\nhttp_access allow localhost\nhttp_access allow localnet\nhttp_access deny all\n\n################################## Proxy Server ################################\nhttp_port 3128\ncoredump_dir /var/spool/squid\nrefresh_pattern ^ftp:\t\t1440\t20%\t10080\nrefresh_pattern ^gopher:\t1440\t0%\t1440\nrefresh_pattern -i (/cgi-bin/|\\?) 0\t0%\t0\nrefresh_pattern \\/(Packages|Sources)(|\\.bz2|\\.gz|\\.xz)$ 0 0% 0 refresh-ims\nrefresh_pattern \\/Release(|\\.gpg)$ 0 0% 0 refresh-ims\nrefresh_pattern \\/InRelease$ 0 0% 0 refresh-ims\nrefresh_pattern \\/(Translation-.*)(|\\.bz2|\\.gz|\\.xz)$ 0 0% 0 refresh-ims\nrefresh_pattern .\t\t0\t20%\t4320\n\n\n# upstream proxy, set to your own upstream proxy IP to avoid SSRF attacks\n# cache_peer 172.1.1.1 parent 3128 0 no-query no-digest no-netdb-exchange default \n\n\n################################## Reverse Proxy To Sandbox ################################\nhttp_port 8194 accel vhost\n# Notice:\n# default is 'sandbox' in dify's github repo, here is 'dify-sandbox' because the service name of sandbox is 'dify-sandbox'\n# you can change it to your own service name\ncache_peer dify-sandbox parent 8194 0 no-query originserver\nacl src_all src all\nhttp_access allow src_all\n"
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ssrf-proxy-entrypoint
+  namespace: deepseek
+data:
+  docker-entrypoint-mount.sh: |
+    #!/bin/bash
+
+    # Modified based on Squid OCI image entrypoint
+
+    # This entrypoint aims to forward the squid logs to stdout to assist users of
+    # common container related tooling (e.g., kubernetes, docker-compose, etc) to
+    # access the service logs.
+
+    # Moreover, it invokes the squid binary, leaving all the desired parameters to
+    # be provided by the "command" passed to the spawned container. If no command
+    # is provided by the user, the default behavior (as per the CMD statement in
+    # the Dockerfile) will be to use Ubuntu's default configuration [1] and run
+    # squid with the "-NYC" options to mimic the behavior of the Ubuntu provided
+    # systemd unit.
+
+    # [1] The default configuration is changed in the Dockerfile to allow local
+    # network connections. See the Dockerfile for further information.
+
+    echo "[ENTRYPOINT] re-create snakeoil self-signed certificate removed in the build process"
+    if [ ! -f /etc/ssl/private/ssl-cert-snakeoil.key ]; then
+        /usr/sbin/make-ssl-cert generate-default-snakeoil --force-overwrite > /dev/null 2>&1
+    fi
+
+    tail -F /var/log/squid/access.log 2>/dev/null &
+    tail -F /var/log/squid/error.log 2>/dev/null &
+    tail -F /var/log/squid/store.log 2>/dev/null &
+    tail -F /var/log/squid/cache.log 2>/dev/null &
+
+    # Replace environment variables in the template and output to the squid.conf
+    echo "[ENTRYPOINT] replacing environment variables in the template"
+    awk '{
+        while(match($0, /\${[A-Za-z_][A-Za-z_0-9]*}/)) {
+            var = substr($0, RSTART+2, RLENGTH-3)
+            val = ENVIRON[var]
+            $0 = substr($0, 1, RSTART-1) val substr($0, RSTART+RLENGTH)
+        }
+        print
+    }' /etc/squid/squid.conf.template > /etc/squid/squid.conf
+
+    /usr/sbin/squid -Nz
+    echo "[ENTRYPOINT] starting squid"
+    /usr/sbin/squid -f /etc/squid/squid.conf -NYC 1
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: dify-postgres
+  namespace: deepseek
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: dify-redis
+  namespace: deepseek
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: dify-weaviate
+  namespace: deepseek
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-api
+  namespace: deepseek
+spec:
+  ports:
+    - name: dify-api
+      protocol: TCP
+      port: 5001
+      targetPort: 5001
+  type: ClusterIP
+  selector:
+    app: dify-api
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-nginx
+  namespace: deepseek
+spec:
+  ports:
+    - name: dify-nginx
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+  selector:
+    app: dify-nginx
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-postgres
+  namespace: deepseek
+spec:
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: dify-postgres
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-redis
+  namespace: deepseek
+spec:
+  clusterIP: None
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379
+      targetPort: 6379
+  selector:
+    app: dify-redis
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-sandbox
+  namespace: deepseek
+spec:
+  ports:
+    - name: dify-sandbox
+      protocol: TCP
+      port: 8194
+      targetPort: 8194
+  selector:
+    app: dify-sandbox
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-ssrf
+  namespace: deepseek
+spec:
+  ports:
+    - protocol: TCP
+      port: 3128
+      targetPort: 3128
+  selector:
+    app: dify-ssrf
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-weaviate
+  namespace: deepseek
+spec:
+  ports:
+    - name: weaviate
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: dify-weaviate
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-web
+  namespace: deepseek
+spec:
+  ports:
+    - name: dify-web
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: dify-web
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dify-worker
+  namespace: deepseek
+spec:
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
+  selector:
+    app: dify-worker
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ollama
+  namespace: deepseek
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 11434
+  selector:
+    app: ollama
+
+
+
+
+
+
+

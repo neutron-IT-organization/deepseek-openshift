@@ -63,6 +63,8 @@ spec:
       labels:
         app: openshift-console
     spec:
+      securityContext:
+        runAsUser: 0
       containers:
       - name: openshift-console-app
         image: quay.io/openshift/origin-console:4.8.0

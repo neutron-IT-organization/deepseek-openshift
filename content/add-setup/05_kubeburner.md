@@ -185,7 +185,9 @@ spec:
           labels:
             foo: bar
         spec:
-          containers:
+          securityContext:
+        runAsUser: 0
+      containers:
             - name: elasticsearch
               resources:
                 limits:
@@ -235,6 +237,8 @@ spec:
       labels:
         foo: bar
     spec:
+      securityContext:
+        runAsUser: 0
       containers:
         - name: kibana
           resources:

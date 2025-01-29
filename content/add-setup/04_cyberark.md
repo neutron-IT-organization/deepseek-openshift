@@ -176,6 +176,8 @@ spec:
       labels:
         app: ubi8
     spec:
+      securityContext:
+        runAsUser: 0
       containers:
       - name: ubi8
         image: openshift.artifactory.mycloud.intranatixis.com/ubi8

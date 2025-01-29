@@ -1,90 +1,122 @@
 ---
-title: Déploiement de Deepseek sur OpenShift
+title: Home
 ---
 
-# Introduction
+```markdown
+# Déploiement de DeepSeek sur OpenShift
 
-Cet article explique comment déployer **Deepseek** sur OpenShift, une plateforme de conteneurisation open-source largement utilisée pour l'orchestration de microservices. Nous allons détailler les étapes nécessaires pour déployer **Deepseek**, ainsi que l'installation de **Dify**, un outil pour l'intégration et la gestion des applications.
+Cette documentation explique comment déployer DeepSeek sur un cluster OpenShift, en créant un namespace, en attribuant des privilèges au service account, en installant les composants nécessaires, et en exposant l'application via une route.
 
-## Prérequis
+## 1. Créer un Namespace `deepseek`
 
-Avant de commencer, assurez-vous d'avoir les éléments suivants :
-- Un cluster **OpenShift** fonctionnel.
-- **kubectl** configuré pour accéder à votre cluster OpenShift.
-- L'image Docker **Deepseek** disponible pour l'exécution sur OpenShift.
+Pour commencer, créez un namespace dédié à DeepSeek sur OpenShift :
 
-## Étape 1 : Installer Dify
-
-Pour installer **Dify**, exécutez la commande suivante dans votre terminal. Cette commande appliquera le fichier de déploiement de **Dify** :
-
-```
-kubectl apply -f https://raw.githubusercontent.com/Winson-030/dify-kubernetes/main/dify-deployment.yaml
+```bash
+oc create namespace deepseek
 ```
 
+## 2. Ajouter la SCC `privileged` au service account `default`
 
-Cela déploiera **Dify** sur votre cluster OpenShift. Une fois l'installation terminée, vous pouvez vérifier l'état du déploiement avec la commande suivante :
+Ensuite, attribuez la SCC (Security Context Constraint) `privileged` au service account `default` dans le namespace `deepseek` :
+
+```bash
+oc adm policy add-scc-to-user privileged -z default -n deepseek
+oc adm policy add-scc-to-user privileged -z dify-redis -n deepseek
+oc adm policy add-scc-to-user privileged -z dify-postgres -n deepseek
+oc adm policy add-scc-to-user privileged -z dify-weaviate -n deepseek
 
 ```
-kubectl get pods -n dify
-```
 
+## 3. Installer le déploiement d'Ollama
 
-## Étape 2 : Déployer Deepseek sur OpenShift
-
-### Création du fichier de déploiement
-
-Créez un fichier de déploiement YAML simplifié pour **Deepseek**. Ce fichier déploiera l'application avec les paramètres nécessaires pour démarrer **Deepseek** sur votre cluster OpenShift.
+Déployez Ollama dans le namespace `deepseek` avec le fichier de configuration suivant :
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deepseek
-  namespace: dify
+  name: ollama
+  namespace: deepseek
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deepseek
+      app: ollama
   template:
     metadata:
       labels:
-        app: deepseek
+        app: ollama
     spec:
+      securityContext:
+        runAsUser: 0
       containers:
-        - name: deepseek
-          image: deepseek/deepseek-v2:latest
+        - name: ollama
+          image: ollama/ollama:latest
           ports:
             - containerPort: 11434
               protocol: TCP
-          command: ["ollama", "run", "deepseek-v2"]
           resources: {}
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
-      securityContext:
-        runAsUser: 0
 ```
 
-Application du fichier YAML
-Pour appliquer ce fichier de déploiement sur OpenShift, exécutez la commande suivante :
+Appliquez cette configuration avec la commande suivante :
 
-```
-kubectl apply -f deepseek-deployment.yaml
-```
-
-Cela déploiera Deepseek sur OpenShift avec la commande ollama run deepseek-v2 au démarrage.
-
-Étape 3 : Vérifier le déploiement
-Une fois le déploiement effectué, vous pouvez vérifier l'état des pods et des déploiements avec les commandes suivantes :
-
-```
-kubectl get pods -n dify
-kubectl get deployments -n dify
+```bash
+oc apply -f ollama-deployment.yaml
 ```
 
-Cela vous permettra de vous assurer que Deepseek est correctement déployé et fonctionne comme prévu.
+## 4. Exécuter `ollama run deepseek-v2`
 
-Conclusion
-En suivant ces étapes, vous avez déployé Deepseek sur votre cluster OpenShift avec la commande ollama run deepseek-v2, et vous avez installé Dify pour une gestion centralisée des applications. Vous pouvez maintenant commencer à utiliser Deepseek dans votre environnement OpenShift pour vos besoins d'intelligence artificielle.
+Une fois le déploiement d'Ollama effectué, exécutez la commande suivante à l'intérieur du pod pour lancer `deepseek-v2` :
 
+```bash
+oc exec -it <pod-name> -- ollama run deepseek-v2
+```
+
+Remplacez `<pod-name>` par le nom du pod Ollama que vous pouvez obtenir avec la commande `oc get pods`.
+
+## 5. Installer Dify dans le namespace `deepseek`
+
+Ajoutez le repo Helm de Dify et installez-le dans le namespace `deepseek` :
+
+```bash
+oc apply -f manifest/dify.yaml
+```
+
+## 6. Exposer Dify avec une Route
+
+Enfin, exposez le service Dify via une route OpenShift pour rendre l'application accessible :
+
+```yaml
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: route-original-dify
+  namespace: deepseek
+spec:
+  path: /
+  to:
+    kind: Service
+    name: dify-nginx
+    weight: 100
+  port:
+    targetPort: http-dify
+  tls:
+    termination: edge
+  wildcardPolicy: None
+```
+
+Appliquez cette route avec la commande suivante :
+
+```bash
+oc apply -f dify-route.yaml
+```
+
+## Conclusion
+
+Vous avez maintenant déployé DeepSeek sur OpenShift. Vous pouvez accéder à l'application via la route exposée et utiliser les différents services qu'elle offre.
+```
+
+Cette documentation couvre toutes les étapes pour déployer et configurer DeepSeek sur OpenShift. Si vous avez des ajustements à faire, n'hésitez pas à le mentionner !
