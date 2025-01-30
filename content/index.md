@@ -19,7 +19,7 @@ Avant de commencer, assurez-vous de remplir les conditions suivantes :
   git clone https://github.com/neutron-IT-organization/deepseek-openshift.git
   ```
 
-## 1. Créer un Namespace `deepseek`
+## 1. Créer un Namespace deepseek
 
 Pour commencer, créez un namespace dédié à DeepSeek sur OpenShift :
 
@@ -80,7 +80,7 @@ Appliquez cette configuration avec la commande suivante :
 oc apply -f manifest/ollama.yaml
 ```
 
-## 4. Exécuter `ollama run deepseek-v2`
+## 4. Exécuter deepseek-v2 dans ollama
 
 
 Accédez à l'onglet Workloads > Pods.
