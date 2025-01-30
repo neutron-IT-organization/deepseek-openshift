@@ -4,6 +4,8 @@ title: Home
 
 # Déploiement de DeepSeek sur OpenShift
 
+![Deepseek main](./images/deepseek-main.png)
+
 ## Prérequis
 
 Avant de commencer, assurez-vous de remplir les conditions suivantes :
