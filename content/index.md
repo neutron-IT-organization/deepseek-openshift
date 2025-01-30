@@ -113,6 +113,8 @@ Ajoutez le repo Helm de Dify et installez-le dans le namespace `deepseek` :
 oc apply -f manifest/dify.yaml
 ```
 
+![Dify-topology](./images/dify-topology.png)
+
 ## 6. Exposer Dify avec une Route
 
 Enfin, exposez le service Dify via une route OpenShift pour rendre l'application accessible :
@@ -139,8 +141,31 @@ spec:
 Appliquez cette route avec la commande suivante :
 
 ```bash
-oc apply -f dify-route.yaml
+oc apply -f manifest/dify-route.yaml
 ```
+
+Vous pouvez maintenant accéder a dify via la route. Pour la récupérer utilisez la commande ci dessous 
+
+```shell
+oc get route dify-route -n deepseek -o jsonpath='{.spec.host}'
+```
+
+## 7. Configuration de dify
+
+Lors de la premiere connextion a dify, le mot de passe administrateur vous sera demandé. Par défaut celui-ci prend la valeur ```password```.
+
+![Dify-admin-password](./images/admin-password.png)
+
+Complétez ensuite le formulaire ```Setting up an admin account``` avec un user/password.
+
+![setting-up-admin-account](./images/setting-up-admin-account.png)
+
+Vous devriez maintenant accéder a l'interface Dify.
+
+![dify-ui](./images/dify-ui.png)
+
+
+
 
 ## Conclusion
 
