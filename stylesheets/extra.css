@@ -1,0 +1,5 @@
+:root {
+    --md-primary-fg-color:        #6e22d8;
+    --md-primary-fg-color--light: linear-gradient(135deg, #6e22d8, #202cac);
+    --md-primary-fg-color--dark:  linear-gradient(135deg, #202cac, #6e22d8);
+  }
