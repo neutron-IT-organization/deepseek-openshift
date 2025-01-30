@@ -15,15 +15,15 @@ Avant de commencer, assurez-vous de remplir les conditions suivantes :
 - Avoir les privilèges administrateur sur ce namespace.
 - Cloner le dépôt suivant pour disposer des fichiers nécessaires :
 
-  ```bash
-  git clone https://github.com/neutron-IT-organization/deepseek-openshift.git
-  ```
+```shell
+git clone https://github.com/neutron-IT-organization/deepseek-openshift.git
+```
 
 ## 1. Créer un Namespace deepseek
 
 Pour commencer, créez un namespace dédié à DeepSeek sur OpenShift :
 
-```bash
+```shell
 oc create namespace deepseek
 ```
 
