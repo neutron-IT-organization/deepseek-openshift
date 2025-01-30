@@ -2,11 +2,20 @@
 title: Home
 ---
 
-```markdown
 # Déploiement de DeepSeek sur OpenShift
 
+## Prérequis
 
-Cette documentation explique comment déployer DeepSeek sur un cluster OpenShift, en créant un namespace, en attribuant des privilèges au service account, en installant les composants nécessaires, et en exposant l'application via une route.
+Avant de commencer, assurez-vous de remplir les conditions suivantes :
+
+- Être en mesure de se connecter à un cluster OpenShift.
+- Pouvoir créer un namespace sur OpenShift.
+- Avoir les privilèges administrateur sur ce namespace.
+- Cloner le dépôt suivant pour disposer des fichiers nécessaires :
+
+  ```bash
+  git clone https://github.com/neutron-IT-organization/deepseek-openshift.git
+  ```
 
 ## 1. Créer un Namespace `deepseek`
 
@@ -25,7 +34,6 @@ oc adm policy add-scc-to-user privileged -z default -n deepseek
 oc adm policy add-scc-to-user privileged -z dify-redis -n deepseek
 oc adm policy add-scc-to-user privileged -z dify-postgres -n deepseek
 oc adm policy add-scc-to-user privileged -z dify-weaviate -n deepseek
-
 ```
 
 ## 3. Installer le déploiement d'Ollama
@@ -118,6 +126,4 @@ oc apply -f dify-route.yaml
 ## Conclusion
 
 Vous avez maintenant déployé DeepSeek sur OpenShift. Vous pouvez accéder à l'application via la route exposée et utiliser les différents services qu'elle offre.
-```
 
-Cette documentation couvre toutes les étapes pour déployer et configurer DeepSeek sur OpenShift. Si vous avez des ajustements à faire, n'hésitez pas à le mentionner !
