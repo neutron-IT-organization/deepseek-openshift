@@ -202,16 +202,7 @@ Pour cela cliquez sur Publish. Penser a ```update``` votre chatbot. Cliquez sur 
 
 NOTE: Selon la configuration de votre nginx, il est possible que l'url utilisé soit dify-api:5001. Si c'est le cas remplacer dans l'url dify-api:5001 par votre route pour accéder au chatbot.
 
-![dify](./images/chatbot.png)
-
-
-
-
-
-
-
-
-
+![dify](./images/dify-chatbot.png)
 
 
 ## Conclusion
