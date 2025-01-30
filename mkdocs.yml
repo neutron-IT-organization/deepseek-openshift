@@ -4,6 +4,7 @@ theme:
   features:
   - navigation.tabs
   - navigation.indexes
+  logo: assets/logo.png
 plugins:
 - search
 repo_url: https://github.com/neutron-IT-organization/deepseek-openshift
