@@ -164,6 +164,32 @@ Vous devriez maintenant accéder a l'interface Dify.
 
 ![dify-ui](./images/dify-ui.png)
 
+## 8. Create Deepseek chatbot
+
+Dans un premier temps configurez le model deepseek. Pour cela cliquez sur votre nom en haut a droite puis sur Settings. Puis cliquez sur Model Provider.
+
+![model-provider](./images/model-provider.png)
+
+Selectionnez ensuite Ollama et cliquez sur ```+ Add Model```
+
+Complétez le formulaire.
+
+Dans Model Name, indiquez le nom de votre model. Ici ```deepseek-v2```. Dans Base URL ecrivez le nom du service ollama ```http://ollama.deepseek.svc.cluster.local```.
+
+![add-ollama](./images/add-ollama.png)
+
+
+Vous pouvez maintenant créer votre chatbot. Pour cela dans l'onglet Studio, cliquez sur Chatbot puis sur ```+ Create from blank```.
+
+Donnez un nom a votre chatbot.
+
+![neutron-deepseek](./images/neutron-deepseek.png)
+
+
+
+
+
+
 
 
 
