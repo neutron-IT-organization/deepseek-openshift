@@ -178,12 +178,31 @@ Dans Model Name, indiquez le nom de votre model. Ici ```deepseek-v2```. Dans Bas
 
 ![add-ollama](./images/add-ollama.png)
 
+NOTE: Rechargez ensuite votre page pour que le model soit bien pris en compte. Pour cela vous pouvez cliquez sur F5.
+
 
 Vous pouvez maintenant créer votre chatbot. Pour cela dans l'onglet Studio, cliquez sur Chatbot puis sur ```+ Create from blank```.
 
-Donnez un nom a votre chatbot.
+Donnez un nom a votre chatbot puis cliquez sur create.
 
 ![neutron-deepseek](./images/neutron-deepseek.png)
+
+Votre chatbot est des a present fonctionnel vous pouvez le tester en discantant dans la section ```Talk to bot```.
+
+![chatbot configure](./images/chatbot-configure.png)
+
+
+## 9. Publier Deepseek chatbot
+
+Vous pouvez maintenant publier votre chatbot.
+
+Pour cela cliquez sur Publish. Penser a ```update``` votre chatbot. Cliquez sur Run App. 
+
+NOTE: Selon la configuration de votre nginx, il est possible que l'url utilisé soit dify-api:5001. Si c'est le cas remplacer dans l'url dify-api:5001 par votre route pour accéder au chatbot.
+
+![dify](./images/chatbot.png)
+
+
 
 
 
