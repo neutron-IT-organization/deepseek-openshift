@@ -19,18 +19,3 @@ markdown_extensions:
 markdown_extensions:
 - toc:
     toc_depth: "2-3"
-# nav:
-# - 'Minilab guides':
-#   - openshift/index.md
-#   - openshift/01_rhel-installation.md
-#   - openshift/02_microshift-installation.md
-#   - openshift/03_microshift-connection.md
-#   - openshift/04_add-console.md
-#   - openshift/05_configure-storage.md
-# - 'Additional Setup':
-#   - add-setup/index.md
-#   - add-setup/01_openvpn.md
-#   - add-setup/02_keycloak.md
-#   - add-setup/03_install_wordpress.md
-#   - add-setup/04_cyberark.md
-#   - add-setup/05_kubeburner.md
