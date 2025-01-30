@@ -38,7 +38,9 @@ oc adm policy add-scc-to-user privileged -z dify-weaviate -n deepseek
 
 ## 3. Installer le déploiement d'Ollama
 
-Déployez Ollama dans le namespace `deepseek` avec le fichier de configuration suivant :
+
+
+Déployez le manifest manifest/ollama.yaml dans le namespace `deepseek` avec le fichier de configuration suivant :
 
 ```yaml
 apiVersion: apps/v1
@@ -73,12 +75,29 @@ spec:
 Appliquez cette configuration avec la commande suivante :
 
 ```bash
-oc apply -f ollama-deployment.yaml
+oc apply -f manifest/ollama.yaml
 ```
 
 ## 4. Exécuter `ollama run deepseek-v2`
 
+
+Accédez à l'onglet Workloads > Pods.
+
+Recherchez le pod ollama dans le namespace deepseek.
+
+Cliquez dessus, puis allez dans l'onglet Terminal.
+
+Exécutez la commande suivante directement dans le terminal du pod :
+
 Une fois le déploiement d'Ollama effectué, exécutez la commande suivante à l'intérieur du pod pour lancer `deepseek-v2` :
+
+```shell
+ollama run deepseek-v2
+```
+
+![Ollama exec](./images/ollama-exec.png)
+
+#### Alternative en ligne de commande
 
 ```bash
 oc exec -it <pod-name> -- ollama run deepseek-v2
